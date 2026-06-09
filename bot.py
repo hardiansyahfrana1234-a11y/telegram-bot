@@ -1,23 +1,32 @@
 import os
+import logging
 from telegram import Update
-from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
+from telegram.ext import (
+    Application,
+    CommandHandler,
+    MessageHandler,
+    filters,
+    ContextTypes,
+)
+
+logging.basicConfig(level=logging.INFO)
 
 TOKEN = os.environ.get("BOT_TOKEN")
 
-# Perintah /start
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        "Halo! 👋 Saya bot auto reply.\nKirim pesan apa saja, saya akan balas!"
+        "Halo! 👋 Saya bot auto reply!\nKirim pesan apa saja!"
     )
 
-# Auto reply semua pesan
 async def auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
     pesan = update.message.text
     await update.message.reply_text(f"Kamu bilang: {pesan} 😊")
 
-app = ApplicationBuilder().token(TOKEN).build()
-app.add_handler(CommandHandler("start", start))
-app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, auto_reply))
+def main():
+    app = Application.builder().token(TOKEN).build()
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, auto_reply))
+    app.run_polling()
 
-print("Bot berjalan...")
-app.run_polling()
+if __name__ == "__main__":
+    main()
